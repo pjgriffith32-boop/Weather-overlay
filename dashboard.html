@@ -132,19 +132,95 @@
   <div class="dashboard-container">
     <div class="manual-alerts">
       <h2>Manual Alerts</h2>
-      <div class="alert-toggle" onclick="toggleAlert(this, 'alert1')">
-        <img src="alert1.png" alt="Alert 1" />
-        Alert 1
+      <div class="alert-toggle" onclick="toggleAlert(this, 'TOR.png')">
+        <img src="TOR.png" alt="Tornado Warning" />
+        Tornado Warning (PNG)
       </div>
-      <div class="alert-toggle" onclick="toggleAlert(this, 'alert2')">
-        <img src="alert2.png" alt="Alert 2" />
-        Alert 2
+      <div class="alert-toggle" onclick="toggleAlert(this, 'TOR.gif')">
+        <img src="TOR.gif" alt="Tornado Warning Animation" />
+        Tornado Warning (GIF)
       </div>
-      <div class="alert-toggle" onclick="toggleAlert(this, 'alert3')">
-        <img src="alert3.png" alt="Alert 3" />
-        Alert 3
+      <div class="alert-toggle" onclick="toggleAlert(this, 'PDS TOR.png')">
+        <img src="PDS TOR.png" alt="PDS Tornado Warning" />
+        PDS Tornado Warning (PNG)
       </div>
-      <!-- Add more toggles as needed -->
+      <div class="alert-toggle" onclick="toggleAlert(this, 'PDS TOR.gif')">
+        <img src="PDS TOR.gif" alt="PDS Tornado Warning Animation" />
+        PDS Tornado Warning (GIF)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'TORE.png')">
+        <img src="TORE.png" alt="Tornado Emergency" />
+        Tornado Emergency (PNG)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'TORE.gif')">
+        <img src="TORE.gif" alt="Tornado Emergency Animation" />
+        Tornado Emergency (GIF)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'SVR.png')">
+        <img src="SVR.png" alt="Severe Thunderstorm Warning" />
+        Severe Thunderstorm Warning (PNG)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'SVR.gif')">
+        <img src="SVR.gif" alt="Severe Thunderstorm Warning Animation" />
+        Severe Thunderstorm Warning (GIF)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'PDS SVR.png')">
+        <img src="PDS SVR.png" alt="PDS Severe Thunderstorm Warning" />
+        PDS Severe Thunderstorm Warning (PNG)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'FFW.png')">
+        <img src="FFW.png" alt="Flash Flood Warning" />
+        Flash Flood Warning (PNG)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'FFW - Considerable.png')">
+        <img src="FFW - Considerable.png" alt="Flash Flood Warning Considerable" />
+        Flash Flood Warning (Considerable)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'FFWE.png')">
+        <img src="FFWE.png" alt="Flash Flood Emergency" />
+        Flash Flood Emergency (PNG)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'HUW.png')">
+        <img src="HUW.png" alt="Hurricane Warning" />
+        Hurricane Warning (PNG)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'TSW.png')">
+        <img src="TSW.png" alt="Tropical Storm Warning" />
+        Tropical Storm Warning (PNG)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'BZW.png')">
+        <img src="BZW.png" alt="Blizzard Warning" />
+        Blizzard Warning (PNG)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'WSW.png')">
+        <img src="WSW.png" alt="Winter Storm Warning" />
+        Winter Storm Warning (PNG)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'SQW.png')">
+        <img src="SQW.png" alt="Snow Squall Warning" />
+        Snow Squall Warning (PNG)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'SVA.png')">
+        <img src="SVA.png" alt="Severe Thunderstorm Watch" />
+        Severe Thunderstorm Watch (PNG)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'TOA.png')">
+        <img src="TOA.png" alt="Tornado Watch" />
+        Tornado Watch (PNG)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'SWS.png')">
+        <img src="SWS.png" alt="Special Weather Statement" />
+        Special Weather Statement (PNG)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'ActiveAlerts.png')">
+        <img src="ActiveAlerts.png" alt="Active Alerts" />
+        Active Alerts (PNG)
+      </div>
+      <div class="alert-toggle" onclick="toggleAlert(this, 'No Active Alerts.png')">
+        <img src="No Active Alerts.png" alt="No Active Alerts" />
+        No Active Alerts (PNG)
+      </div>
+      <button class="copy-link" onclick="copyOverlayLink()">Copy Overlay Link</button>
     </div>
     <div class="alerts-panel">
       <h2>Active Alerts</h2>
@@ -163,7 +239,7 @@
       if (!overlay) {
         overlay = document.createElement('img');
         overlay.id = overlayId;
-        overlay.src = alertId + '.png';
+        overlay.src = alertId;
         overlay.style.position = 'fixed';
         overlay.style.top = '50%';
         overlay.style.left = '50%';
@@ -176,6 +252,13 @@
       } else {
         overlay.remove();
       }
+    }
+    // Copy overlay link function
+    function copyOverlayLink() {
+      const overlayUrl = window.location.origin + '/overlay.html';
+      navigator.clipboard.writeText(overlayUrl).then(() => {
+        alert('Overlay link copied!\n' + overlayUrl);
+      });
     }
     // Example: Populate active alerts (replace with your logic)
     const alerts = [
