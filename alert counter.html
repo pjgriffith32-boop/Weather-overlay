@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Alert System</title>
+  <style>
+    /* Basic Page Styles */
+    body {
+      margin: 0;
+      padding: 0;
+      background: rgba(0, 0, 0, 0);
+      /* Try all possible Franklin Gothic Demi Condi names and fallbacks */
+      font-family:
+        "Franklin Gothic Demi Cond",
+        "Franklin Gothic Demi Condensed",
+        "Franklin Gothic Demi",
+        "Franklin Gothic Medium Cond",
+        "Franklin Gothic Medium",
+        "Arial Narrow",
+        Arial,
+        sans-serif;
+      background-size: cover;
+    }
+    .alert-container {
+      position: fixed;
+      top: 0;
+      right: 0; /* Move to right side */
+      left: auto;
+      width: 340px; /* reduced from 420px */
+      z-index: 10001;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end; /* Align container to the right */
+      margin: 0;
+      padding: 0;
+    }
+    .alert-row {
+      width: calc(100% - 0px);
+      min-height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family:
+        "Franklin Gothic Demi Cond",
+        "Franklin Gothic Demi Condensed",
+        "Franklin Gothic Demi",
+        "Franklin Gothic Medium Cond",
+        "Franklin Gothic Medium",
+        "Arial Narrow",
+        Arial,
+        sans-serif;
+      font-weight: 900;
+      font-size: 2.1rem;
+      color: #fff;
+      box-sizing: border-box;
+      padding: 0 22px 0 18px;
+      margin-bottom: 8px; /* add gap between boxes */
+      border-bottom: 4px solid #ffffff00;
+      position: relative;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+    }
+    .alert-row:last-child {
+      border-bottom: none;
+    }
+    .winter-storm {
+      background: linear-gradient(90deg, #9a0079 0%, #ff00c8 100%);
+    }
+    .severe-warning {
+      background: linear-gradient(90deg, #9a9500 0%, #ffdb4d 100%);
+    }
+    .tornado-warning {
+      background: linear-gradient(90deg, #a40000 0%, #ff0000 100%);
+    }
+    .flood-warning {
+      background: linear-gradient(90deg, #21b300 0%, #2fff00 100%);
+    }
+    .hurricane-warning {
+      background: linear-gradient(90deg, #420000 0%, #860000 100%);
+    }
+    .blizzard-warning {
+      background: linear-gradient(90deg, #a40000 0%, #ff0000 100%);
+    }
+    .winter-weather-advisory {
+      background: linear-gradient(90deg, #4db8ff 0%, #b3e6ff 100%);
+    }
+    .snow-squall-warning {
+      background: linear-gradient(90deg, #481252 0%, #6c257c 100%);
+    }
+    .tropical-storm-warning {
+      background: linear-gradient(90deg, #5c0000 0%, #b00000 100%);
+    }
+    .tornado-watch {
+      background: linear-gradient(90deg, #e62222 0%, #ff6666 100%);
+    }
+    .severe-thunderstorm-watch {
+      background: linear-gradient(90deg, #f1c40f 0%, #ffe066 100%);
+    }
+    .alert-label {
+      flex: 1;
+      text-align: center; /* Center the alert name and subtext */
+      font-size: 1.35rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family:
+        "Franklin Gothic Demi Cond",
+        "Franklin Gothic Demi Condensed",
+        "Franklin Gothic Demi",
+        "Franklin Gothic Medium Cond",
+        "Franklin Gothic Medium",
+        "Arial Narrow",
+        Arial,
+        sans-serif;
+      font-weight: 900;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center; /* Center horizontally */
+    }
+    .alert-type-word {
+      font-size: 1.35rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 1;
+      margin-top: 2px;
+      color: #fff;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+      font-family:
+        "Franklin Gothic Demi Cond",
+        "Franklin Gothic Demi Condensed",
+        "Franklin Gothic Demi",
+        "Franklin Gothic Medium Cond",
+        "Franklin Gothic Medium",
+        "Arial Narrow",
+        Arial,
+        sans-serif;
+    }
+    .alert-count-num {
+      font-size: 3.1rem;
+      min-width: 54px;
+      text-align: right;
+      font-family:
+        "Franklin Gothic Demi Cond",
+        "Franklin Gothic Demi Condensed",
+        "Franklin Gothic Demi",
+        "Franklin Gothic Medium Cond",
+        "Franklin Gothic Medium",
+        "Arial Narrow",
+        Arial,
+        sans-serif;
+      font-weight: 900;
+      margin-left: 18px;
+      line-height: 1;
+    }
+    .alert-row.winter-storm .alert-type-word {
+      display: inline;
+    }
+
+    /* change button style */
+    .change-btn {
+      background: #000;
+      color: #fff;
+      border: 1px solid #222;
+      padding: 10px 14px; /* increased */
+      margin-left: 10px;
+      font-size: 1rem; /* increased */
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      border-radius: 6px;
+      min-width: 160px;
+    }
+    .change-btn:hover { background: #111; border-color: #333; }
+
+    /* modal popup */
+    .swap-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20000;
+    }
+    .swap-modal {
+      background: #111;
+      color: #fff;
+      padding: 16px;
+      border-radius: 8px;
+      width: 440px; /* increased width */
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+      max-height: 80vh;
+      overflow: auto;
+      font-weight: 800;
+    }
+    .swap-modal h3 {
+      margin: 0 0 10px 0;
+      font-size: 1rem;
+      letter-spacing: 1px;
+    }
+    .swap-option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px; /* increased option size */
+      border-radius: 6px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.03);
+      font-size: 1rem;
+    }
+    .swap-option:hover { background: rgba(255,255,255,0.06); }
+    .swap-close {
+      margin-top: 6px;
+      display:block;
+      text-align:center;
+      padding:10px;
+      cursor:pointer;
+      color:#fff;
+      background:rgba(255,255,255,0.04);
+      border-radius:6px;
+      font-size:0.95rem;
+      border:1px solid rgba(255,255,255,0.06);
+    }
+
+    /* top-center controls outside the alert box */
+    .top-controls-outside {
+      position: fixed;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      z-index: 12000; /* above alert container */
+      pointer-events: auto;
+    }
+
+    /* left-side container for non-selected alerts */
+    .other-alerts-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 340px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin: 0;
+      padding: 0;
+      pointer-events: auto;
+    }
+
+    /* push right container slightly inward when left container is present */
+    .alert-container {
+      right: 0;
+      left: auto;
+      margin-right: 0;
+      /* width unchanged */
+    }
+
+    /* slightly reduce width of alert rows to fit both sides visually */
+    .alert-row {
+      width: calc(100% - 0px);
+      /* ...existing rules... */
+    }
+  </style>
+</head>
+<body>
+    <!-- left-side container for other alerts (new) -->
+    <div id="leftAlerts" class="other-alerts-container" aria-hidden="false"></div>
+
+    <!-- top-center controls (outside the alert box) -->
+    <div class="top-controls-outside">
+      <button id="change-severe-btn" class="change-btn" onclick="openSwapDialog('severe-slot')">Change (SEVERE WARNING)</button>
+      <button id="change-tornado-btn" class="change-btn" onclick="openSwapDialog('tornado-slot')">Change (TORNADO WARNING)</button>
+    </div>
+
+  <div class="alert-container">
+    <div class="alert-row winter-storm">
+      <span class="alert-label">
+        WINTER STORM
+        <span class="alert-type-word">WARNING</span>
+      </span>
+      <span class="alert-count-num" id="winter-storm-count">0</span>
+    </div>
+    <div class="alert-row blizzard-warning">
+      <span class="alert-label">
+        BLIZZARD
+        <span class="alert-type-word">WARNING</span>
+      </span>
+      <span class="alert-count-num" id="blizzard-warning-count">0</span>
+    </div>
+    <div class="alert-row winter-weather-advisory">
+      <span class="alert-label">
+        WINTER WEATHER
+        <span class="alert-type-word">ADVISORY</span>
+      </span>
+      <span class="alert-count-num" id="winter-weather-advisory-count">0</span>
+    </div>
+    <div class="alert-row hurricane-warning">
+      <span class="alert-label">
+        HURRICANE
+        <span class="alert-type-word">WARNING</span>
+      </span>
+      <span class="alert-count-num" id="hurricane-warning-count">0</span>
+    </div>
+    <div class="alert-row severe-warning">
+      <span class="alert-label">
+        SEVERE
+        <span class="alert-type-word">WARNING</span>
+      </span>
+      <span style="display:flex; align-items:center;">
+        <span class="alert-count-num" id="severe-warning-count">0</span>
+      </span>
+    </div>
+    <div class="alert-row tornado-warning">
+      <span class="alert-label">
+        TORNADO
+        <span class="alert-type-word">WARNING</span>
+      </span>
+      <span style="display:flex; align-items:center;">
+        <span class="alert-count-num" id="tornado-warning-count">0</span>
+      </span>
+    </div>
+    <div class="alert-row flood-warning">
+      <span class="alert-label">
+        FLASH FLOOD
+        <span class="alert-type-word">WARNING</span>
+      </span>
+      <span class="alert-count-num" id="flood-warning-count">0</span>
+    </div>
+    <div class="alert-row snow-squall-warning">
+      <span class="alert-label">
+        SNOW SQUALL
+        <span class="alert-type-word">WARNING</span>
+      </span>
+      <span class="alert-count-num" id="snow-squall-warning-count">0</span>
+    </div>
+    <div class="alert-row tropical-storm-warning">
+      <span class="alert-label">
+        TROPICAL STORM
+        <span class="alert-type-word">WARNING</span>
+      </span>
+      <span class="alert-count-num" id="tropical-storm-warning-count">0</span>
+    </div>
+    <div class="alert-row tornado-watch">
+      <span class="alert-label">
+        TORNADO
+        <span class="alert-type-word">WATCH</span>
+      </span>
+      <span class="alert-count-num" id="tornado-watch-count">0</span>
+    </div>
+    <div class="alert-row severe-thunderstorm-watch">
+      <span class="alert-label">
+        SEVERE
+        <span class="alert-type-word">WATCH</span>
+      </span>
+      <span class="alert-count-num" id="severe-thunderstorm-watch-count">0</span>
+    </div>
+  </div>
+
+  <!-- Swap modal -->
+  <div id="swapModalBackdrop" class="swap-modal-backdrop" onclick="closeSwapDialog(event)">
+    <div class="swap-modal" id="swapModal" onclick="event.stopPropagation()">
+      <h3>Select alert to show in this slot</h3>
+      <div id="swapOptionsContainer"></div>
+      <div class="swap-close" onclick="closeSwapDialog()">Cancel</div>
+    </div>
+  </div>
+
+  <script>
+    // Fetch alerts from warnverlay API
+    async function fetchWarnverlayAlerts() {
+      try {
+        const response = await fetch('https://warnverlay-usa-warnings.netlify.app/');
+        if (!response.ok) throw new Error("Warnverlay API error");
+        const data = await response.json();
+        if (!Array.isArray(data) || data.length === 0) return [];
+        return data.map(alert => {
+          const props = alert.properties || {};
+          const eventType = props.event || "Unknown Event";
+          return { eventType };
+        });
+      } catch (error) {
+        return [];
+      }
+    }
+    // Fetch and parse alerts from the Atom API (existing logic)
+    async function fetchAtomAlerts() {
+      try {
+        const response = await fetch('https://api.weather.gov/alerts/active.atom?');
+        const text = await response.text();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(text, "application/xml");
+        let entries = [];
+        const xpathResult = xmlDoc.evaluate("//*[local-name()='entry']", xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+        for (let i = 0; i < xpathResult.snapshotLength; i++) {
+          entries.push(xpathResult.snapshotItem(i));
+        }
+        function getText(node, tagName) {
+          const result = node.ownerDocument.evaluate(
+            `.//*[local-name()='${tagName}']`,
+            node,
+            null,
+            XPathResult.STRING_TYPE,
+            null
+          );
+          return result.stringValue.trim();
+        }
+        return entries.map(entry => ({
+          eventType: getText(entry, "event") || "Unknown Event"
+        }));
+      } catch (error) {
+        return [];
+      }
+    }
+    // Unified fetch function: try warnverlay, fallback to Atom
+    async function fetchWeatherAlerts() {
+      let alerts = await fetchWarnverlayAlerts();
+      if (!alerts || alerts.length === 0) {
+        alerts = await fetchAtomAlerts();
+      }
+      return alerts;
+    }
+    // Calculate alert counts for header display.
+    function calculateAlertCounts(alerts) {
+      const counts = { 
+        tornado: 0, 
+        severe: 0, 
+        flood: 0, 
+        winterStorm: 0,
+        blizzard: 0,
+        winterWeatherAdvisory: 0,
+        hurricane: 0,
+        snowSquall: 0,
+        tropicalStorm: 0,
+        tornadoWatch: 0,
+        severeThunderstormWatch: 0
+      };
+      alerts.forEach(alert => {
+        const type = alert.eventType.toLowerCase();
+        if (type.includes("tornado warning")) counts.tornado++;
+        if (
+          type.includes("severe thunderstorm warning") ||
+          type.includes("severe weather statement") ||
+          type.includes("severe warning")
+        ) counts.severe++;
+        if (type.includes("flash flood warning")) counts.flood++;
+        if (type.includes("winter storm warning")) counts.winterStorm++;
+        if (type.includes("blizzard warning")) counts.blizzard++;
+        if (type.includes("winter weather advisory")) counts.winterWeatherAdvisory++;
+        if (type.includes("hurricane warning")) counts.hurricane++;
+        if (type.includes("snow squall warning")) counts.snowSquall++;
+        if (type.includes("tropical storm warning")) counts.tropicalStorm++;
+        if (type.includes("tornado watch")) counts.tornadoWatch++;
+        if (type.includes("severe thunderstorm watch")) counts.severeThunderstormWatch++;
+      });
+      return counts;
+    }
+
+    // Keep last fetched alerts for immediate refresh without refetching
+    let lastAlerts = [];
+
+    // slot -> current count-key mapping (these slots map to the two right-side rows)
+    const slotToType = {
+      'severe-slot': 'severe',
+      'tornado-slot': 'tornado'
+    };
+
+    // mapping slot -> count element id (fixed DOM id for the slot)
+    const slotToCountId = {
+      'severe-slot': 'severe-warning-count',
+      'tornado-slot': 'tornado-warning-count'
+    };
+
+    // available alert options (keys correspond to calculateAlertCounts keys)
+    const alertOptions = [
+      { key: 'tornado', className: 'tornado-warning', main: 'TORNADO', sub: 'WARNING' },
+      { key: 'severe', className: 'severe-warning', main: 'SEVERE', sub: 'WARNING' },
+      { key: 'flood', className: 'flood-warning', main: 'FLASH FLOOD', sub: 'WARNING' },
+      { key: 'winterStorm', className: 'winter-storm', main: 'WINTER STORM', sub: 'WARNING' },
+      { key: 'blizzard', className: 'blizzard-warning', main: 'BLIZZARD', sub: 'WARNING' },
+      { key: 'winterWeatherAdvisory', className: 'winter-weather-advisory', main: 'WINTER WEATHER', sub: 'ADVISORY' },
+      { key: 'hurricane', className: 'hurricane-warning', main: 'HURRICANE', sub: 'WARNING' },
+      { key: 'snowSquall', className: 'snow-squall-warning', main: 'SNOW SQUALL', sub: 'WARNING' },
+      { key: 'tropicalStorm', className: 'tropical-storm-warning', main: 'TROPICAL STORM', sub: 'WARNING' },
+      { key: 'tornadoWatch', className: 'tornado-watch', main: 'TORNADO', sub: 'WATCH' },
+      { key: 'severeThunderstormWatch', className: 'severe-thunderstorm-watch', main: 'SEVERE', sub: 'WATCH' }
+    ];
+
+    // Helper: all option classes for removal when switching visuals
+    const allOptionClasses = alertOptions.map(o => o.className);
+
+    // Initialize data-key attributes on rows so we can find rows by alert key
+    function initRowDataKeys() {
+      alertOptions.forEach(opt => {
+        const r = document.querySelector(`.alert-row.${opt.className}`);
+        if (r) r.dataset.key = opt.key;
+      });
+    }
+
+    // relocate rows into left or right containers based on selected slots
+    function relocateRows() {
+      const leftContainer = document.getElementById('leftAlerts');
+      const rightContainer = document.querySelector('.alert-container');
+
+      // ensure containers exist
+      if (!leftContainer || !rightContainer) return;
+
+      alertOptions.forEach(opt => {
+        // find the row that currently displays this option (by class)
+        const row = document.querySelector(`.alert-row.${opt.className}`);
+        if (!row) return;
+
+        // if this option is currently used by any slot, ensure it is in the right container
+        const isSelected = Object.values(slotToType).includes(opt.key);
+        if (isSelected) {
+          // move to right (slot area)
+          if (row.parentElement !== rightContainer) rightContainer.appendChild(row);
+        } else {
+          // move to left (other alerts)
+          if (row.parentElement !== leftContainer) leftContainer.appendChild(row);
+        }
+      });
+    }
+
+    // Update alert counts in the new layout (uses slots for severe/tornado)
+    function updateAlertCounts(alerts) {
+      const counts = calculateAlertCounts(alerts);
+
+      // For every .alert-row, use its dataset.key to look up the count.
+      // This ensures the number follows the visual/key when rows are swapped.
+      document.querySelectorAll('.alert-row').forEach(row => {
+        const key = row.dataset.key || '';
+        const cntEl = row.querySelector('.alert-count-num');
+        if (!cntEl) return;
+        const val = (key && Object.prototype.hasOwnProperty.call(counts, key)) ? counts[key] : 0;
+        cntEl.textContent = val;
+      });
+    }
+
+    // apply the selected option key to the slot: perform a swap so the chosen alert moves into the slot
+    function applySlotOption(slotId, optionKey) {
+      const option = alertOptions.find(o => o.key === optionKey);
+      if (!option) return;
+
+      const countId = slotToCountId[slotId];
+      const slotCountEl = document.getElementById(countId);
+      if (!slotCountEl) return;
+      const slotRow = slotCountEl.closest('.alert-row');
+      if (!slotRow) return;
+
+      const sourceKey = slotToType[slotId]; // what the slot currently represents
+      const sourceOption = alertOptions.find(o => o.key === sourceKey);
+
+      // find the row currently showing the optionKey (if any)
+      const targetRow = document.querySelector(`.alert-row.${option.className}`);
+
+      // If targetRow exists and is different from slotRow, swap their visuals/keys
+      if (targetRow && targetRow !== slotRow) {
+        // apply chosen option to slotRow
+        allOptionClasses.forEach(c => slotRow.classList.remove(c));
+        slotRow.classList.add(option.className);
+        const slotLabel = slotRow.querySelector('.alert-label');
+        if (slotLabel) slotLabel.innerHTML = `${option.main} <span class="alert-type-word">${option.sub}</span>`;
+        slotRow.dataset.key = option.key;
+
+        // move slot's previous alert into the targetRow
+        if (sourceOption) {
+          allOptionClasses.forEach(c => targetRow.classList.remove(c));
+          targetRow.classList.add(sourceOption.className);
+          const targetLabel = targetRow.querySelector('.alert-label');
+          if (targetLabel) targetLabel.innerHTML = `${sourceOption.main} <span class="alert-type-word">${sourceOption.sub}</span>`;
+          targetRow.dataset.key = sourceOption.key;
+
+          // if targetRow is a slot (severe/tornado), update that slot mapping to sourceKey
+          const targetCount = targetRow.querySelector('.alert-count-num');
+          if (targetCount) {
+            const slotForTarget = Object.keys(slotToCountId).find(k => slotToCountId[k] === targetCount.id);
+            if (slotForTarget) slotToType[slotForTarget] = sourceOption.key;
+          }
+        }
+
+        // update the slot mapping to the newly applied option
+        slotToType[slotId] = option.key;
+      } else {
+        // fallback: no existing row to swap with — just set the slotRow to the chosen option
+        allOptionClasses.forEach(c => slotRow.classList.remove(c));
+        slotRow.classList.add(option.className);
+        const slotLabel = slotRow.querySelector('.alert-label');
+        if (slotLabel) slotLabel.innerHTML = `${option.main} <span class="alert-type-word">${option.sub}</span>`;
+        slotRow.dataset.key = option.key;
+        slotToType[slotId] = option.key;
+      }
+
+      // relocate rows so non-selected ones move left, selected stay right
+      relocateRows();
+
+      // refresh counts and button labels
+      updateAlertCounts(lastAlerts);
+      updateTopButtons();
+    }
+
+    // New: update the top buttons to show the current alert in use for each slot
+    function updateTopButtons() {
+      function labelForSlot(slotId) {
+        const key = slotToType[slotId];
+        const opt = alertOptions.find(o => o.key === key);
+        if (!opt) return 'Change';
+        return `Change (${opt.main} ${opt.sub})`;
+      }
+      const severeBtn = document.getElementById('change-severe-btn');
+      const tornadoBtn = document.getElementById('change-tornado-btn');
+      if (severeBtn) severeBtn.textContent = labelForSlot('severe-slot');
+      if (tornadoBtn) tornadoBtn.textContent = labelForSlot('tornado-slot');
+    }
+
+    // Open swap dialog for a specific slot
+    function openSwapDialog(slotId) {
+      const container = document.getElementById('swapOptionsContainer');
+      container.innerHTML = '';
+      const currentKey = slotToType[slotId];
+
+      alertOptions.forEach(opt => {
+        // show all options (including current) but indicate current
+        const el = document.createElement('div');
+        el.className = 'swap-option';
+        el.innerHTML = `<div>${opt.main} <span style="opacity:0.85; margin-left:8px; font-weight:800;" class="alert-type-word">${opt.sub}</span></div><div>${opt.key === currentKey ? 'Current' : 'Select'}</div>`;
+        el.onclick = () => { applySlotOption(slotId, opt.key); closeSwapDialog(); };
+        container.appendChild(el);
+      });
+
+      document.getElementById('swapModalBackdrop').style.display = 'flex';
+    }
+
+    function closeSwapDialog(e) {
+      if (e && e.target && e.target.id !== 'swapModalBackdrop') return;
+      document.getElementById('swapModalBackdrop').style.display = 'none';
+    }
+
+    // Add: fetch alerts and refresh UI (was missing, caused counts not updating)
+    async function updateAlertBar() {
+	  try {
+	    const alerts = await fetchWeatherAlerts();
+	    lastAlerts = alerts || [];
+	    updateAlertCounts(lastAlerts);
+	    relocateRows();
+	    updateTopButtons();
+	    return lastAlerts;
+	  } catch (err) {
+	    // keep minimal logging for debugging
+	    console.error('updateAlertBar error', err);
+	    return [];
+	  }
+	}
+
+    // keep existing DOMContentLoaded logic; initialize row keys and placement first
+    window.addEventListener('DOMContentLoaded', () => {
+      initRowDataKeys();
+      updateTopButtons();   // set top button labels immediately
+      relocateRows();       // place non-selected alerts left, selected right
+      updateAlertBar();     // async refresh (will re-run relocate/update as needed)
+      setInterval(updateAlertBar, 5000);
+    });
+  </script>
+</body>
+</html>
